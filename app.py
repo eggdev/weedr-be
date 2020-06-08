@@ -1,6 +1,7 @@
 import praw
 import pandas as pd
 import datetime as dt
+import json
 from config import CLIENT_ID, CLIENT_SECRET, USER_AGENT, USERNAME, PASSWORD
 
 reddit = praw.Reddit(
@@ -11,16 +12,33 @@ reddit = praw.Reddit(
     password=PASSWORD)
 
 subreddit = reddit.subreddit("knicklejerk")
+reported_list = []
 
-reported_comments = subreddit.mod.reports("comments")
-reported_posts = subreddit.mod.reports("submissions")
 
-for comment in reported_comments:
-    # for reported comment in modqueue:
-    # get the reported users name
-    print(f"Comment: {comment.author}")
+def get_reported_data(sub):
+    # go through all reported comments
+    reported_comments = sub.mod.reports("comments")
+    for comment in reported_comments:
+        comment_fields = ('body', 'id')
+        to_dict = vars(comment)
+        # Configure their object
+        sub_dict = {field: to_dict[field] for field in comment_fields}
+        sub_dict["author"] = serialized_author = str(comment.author)
+        # Add to list of collected data
+        reported_list.append(sub_dict)
 
-for post in reported_posts:
-    # for reported post in modqueue:
-    # get the reported users name
-    print(f"Post: {post.author}")
+    reported_posts = sub.mod.reports("submissions")
+    for post in reported_posts:
+        post_fields = ('title', 'id')
+        to_dict = vars(post)
+        # Configure their object
+        sub_dict = {field: to_dict[field] for field in post_fields}
+        sub_dict["author"] = serialized_author = str(post.author)
+        # Add to list of collected data
+        reported_list.append(sub_dict)
+
+
+get_reported_data(subreddit)
+
+with open("comments.json", "w") as json_file:
+    json.dump(reported_list, json_file)
