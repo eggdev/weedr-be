@@ -1,3 +1,6 @@
+import json
+
+
 def aggregate_and_format_reddit_data(initial_list, dict_fields):
     # ! Make sure that you do something about reported items with Markdown Lists and lots of HTML
     formatted_list = []
@@ -21,3 +24,16 @@ def aggregate_and_format_reddit_data(initial_list, dict_fields):
         formatted_list.append(sub_dict)
 
     return formatted_list
+
+
+def get_reported_data(sub, dict_fields):
+    reported_list = []
+    # format and append all reported comments
+    reported_list.extend(aggregate_and_format_reddit_data(
+        sub.mod.reports("comments"), dict_fields))
+    # format and append all reported submissions
+    reported_list.extend(aggregate_and_format_reddit_data(
+        sub.mod.reports("submissions"), dict_fields))
+
+    with open("reported.json", "w") as json_file:
+        json.dump(reported_list, json_file)

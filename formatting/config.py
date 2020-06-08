@@ -17,6 +17,6 @@ reddit = praw.Reddit(
     username=USERNAME,
     password=PASSWORD)
 subreddit = reddit.subreddit("knicklejerk")
+
 dict_fields = ('author', 'id', "name",
                "score", "num_comments", "ups", "downs", "mod_reports", "user_reports")
-reported_list = []
