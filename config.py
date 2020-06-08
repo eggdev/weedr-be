@@ -3,8 +3,8 @@ import dotenv
 
 dotenv.load_dotenv()
 
-API_SECRET_KEY = os.getenv("API_SECRET_KEY")
-PERSONAL_USE_SCRIPT = os.getenv("PERSONAL_USE_SCRIPT")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 USER_AGENT = os.getenv("USER_AGENT")
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
