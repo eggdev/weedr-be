@@ -16,6 +16,7 @@ reddit = praw.Reddit(
     user_agent=USER_AGENT,
     username=USERNAME,
     password=PASSWORD)
+
 subreddit = reddit.subreddit("knicklejerk")
 
 dict_fields = ("author",
