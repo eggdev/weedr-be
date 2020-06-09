@@ -10,19 +10,27 @@ from reddit.app import collect_recently_reported_users
 
 app = Flask(__name__)
 app.config["MONGODB_SETTINGS"] = {
-    'host': f'mongodb://localhost/knicklejerk'
+    'host': f'mongodb://localhost/{subreddit}'
 }
+
 initialize_app(app)
 
 
-@app.route("/users")
+@ app.route("/users")
 # Fetch all users from db
 def get_all_users():
     users = User.objects().to_json()
     return {"users": users}, 200
 
 
-@app.route('/users', methods=['POST'])
+@ app.route("/users/<string:name>")
+# Get single user
+def get_one_user(name):
+    found = User.objects.get(name=name).to_json()
+    return found, 200
+
+
+@ app.route('/users', methods=['POST'])
 # Add new user
 def add_user():
     body = request.get_json()
@@ -31,7 +39,7 @@ def add_user():
     return {"id": name}, 200
 
 
-@app.route('/users/<string:name>', methods=["PUT"])
+@ app.route('/users/<string:name>', methods=["PUT"])
 # Users can get updated
 def update_user(name):
     body = request.get_json()
@@ -40,7 +48,7 @@ def update_user(name):
     return updated_user, 200
 
 
-@app.route('/users/<string:name>', methods=["DELETE"])
+@ app.route('/users/<string:name>', methods=["DELETE"])
 # Users can be deleted
 def delete_user(name):
     deleted = User.objects().get(name=name)
