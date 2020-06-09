@@ -1,5 +1,5 @@
 import json
-from user import User
+from reddit.user import User
 
 
 def get_reported_data(sub):
@@ -32,6 +32,7 @@ def check_users_and_add_reports(curr_reports, reported_users):
             # pysthcript - like spanglish
             # found = [for (users in list) if (usr.id == author.id) return usr]
             found_user = [
-                usr for usr in reported_users if usr.id == item.author.id][0]
+                usr for usr in reported_users if usr.id == item.author.id
+            ][0]
             # TODO PUT method on individual user
             found_user.add_reported_item(item)
