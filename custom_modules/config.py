@@ -10,6 +10,8 @@ USER_AGENT = os.getenv("USER_AGENT")
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
+SUBREDDIT = os.getenv("SUBREDDIT")
+
 reddit = praw.Reddit(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
@@ -17,7 +19,7 @@ reddit = praw.Reddit(
     username=USERNAME,
     password=PASSWORD)
 
-subreddit = reddit.subreddit("knicklejerk")
+subreddit = reddit.subreddit(SUBREDDIT)
 
 dict_fields = ("author",
                "id",
