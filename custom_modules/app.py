@@ -14,6 +14,9 @@ check_users_and_add_reports(curr_reports, reported_users)
 
 for bad_guys in reported_users:
     print(bad_guys.name, bad_guys.redditor.name)
+
+# Build out flask app
+
 # Alright now we have users being turned into custom objects
 # Those users have multiple submissions in their list of reports
 

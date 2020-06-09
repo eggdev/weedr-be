@@ -12,3 +12,8 @@ class User(object):
         # If the passed item does not exist in the users already reported list
         if not any(prev_reported.id == item.id for prev_reported in self.reported_items):
             self.reported_items.append(item)
+        else:
+            # If it does exist,
+            # We will need to update user_reports && mod_reports
+            # Edge cases for approved reports
+            return
