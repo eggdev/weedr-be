@@ -23,6 +23,6 @@ check_users_and_add_reports(curr_reports, reported_users)
 # Date of report
 # Total # of reports on post (user && mod)
 # Report type count (spam, shitpost, etc)
-# Check it's existence in DB (some file)
+# Check it's exsistence in DB (some file for now)
 # When at karma and report number threshold we will analyze karma and reports
 # Will determine the suitability of their post content

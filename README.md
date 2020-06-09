@@ -10,6 +10,7 @@ Initial build will include features:
 
 Future iterations of this project will include:
 
+- Chrome extension for keeping track of them
 - Dashboard for seeing frequently reported users
 - AI for flagging/removing potentially reportable posts
 - Possible inspection into users comments and provide at risk score for Reddit as a whole

@@ -6,6 +6,8 @@ class User(object):
         self.is_mod = redditor.is_mod
         self.name = redditor.name
         self.reported_items = []
+        self.reported_by_mod_count = 0
+        self.reported_by_user_count = 0
 
     def add_reported_item(self, item):
         # if !(reported_users.reduce((usr) => usr.id === item.author.id));

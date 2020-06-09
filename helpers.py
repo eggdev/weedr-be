@@ -1,6 +1,5 @@
 import json
 from user import User
-# Yay learning Python. So happy I didn't keep going with this
 
 
 def get_reported_data(sub):
