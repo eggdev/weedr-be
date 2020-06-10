@@ -1,44 +1,30 @@
-from flask import Blueprint, Response, request
+from flask import Response, request
 from database.models import User
-
-users = Blueprint("users", __name__)
-
-
-@users.route("/users")
-# Fetch all users from db
-def get_all_users():
-    users = User.objects().to_json()
-    return {"users": users}, 200
+from flask_restful import Resource
 
 
-@users.route("/users/<string:name>")
-# Get single user
-def get_one_user(name):
-    found = User.objects.get(name=name).to_json()
-    return found, 200
+class UsersApi(Resource):
+    def get(self):
+        users = User.objects().to_json()
+        return Response(users, mimetype="application/json", status=200)
+
+    def post(self):
+        body = request.get_json()
+        new_user = User(**body).save()
+        return Response(new_user, mimetype="application/json", status=200)
 
 
-@users.route('/users', methods=['POST'])
-# Add new user
-def add_user():
-    body = request.get_json()
-    new_user = User(**body).save()
-    name = new_user.name
-    return {"id": name}, 200
+class UserApi(Resource):
+    def get_one(self, name):
+        found = User.objects.get(name=name).to_json()
+        return Response(found, mimetype="application/json", status=200)
 
+    def update_one(self, name):
+        body = request.get_json()
+        updated = User.objects.get(name=name).update(**body).to_json()
+        return Response(updated, mimetype="application/json", status=200)
 
-@users.route('/users/<string:name>', methods=["PUT"])
-# Users can get updated
-def update_user(name):
-    body = request.get_json()
-    User.objects.get(name=name).update(**body)
-    updated_user = User.objects.get(name=body["name"]).to_json()
-    return updated_user, 200
-
-
-@users.route('/users/<string:name>', methods=["DELETE"])
-# Users can be deleted
-def delete_user(name):
-    deleted = User.objects().get(name=name)
-    deleted.delete()
-    return deleted.to_json(), 200
+    def delete_one(self, name):
+        deleted = User.objects().get(name=name)
+        deleted.delete()
+        return Response(deleted, mimetype="application/json", status=200)
