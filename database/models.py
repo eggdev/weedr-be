@@ -1,9 +1,10 @@
+import datetime
 from database.db import db
-from mongoengine import StringField, ListField, ObjectIdField
+from mongoengine import StringField, ListField, DateTimeField, ObjectIdField
 
 
 class Reported_Users(db.Document):
+    redditor_id = StringField(required=[True])
     name = StringField(required=True)
-    # reported_items = ListField(required=True)
-    # redditor_data = ObjectIdField(require=True)
-    # redditor_data =
+    modified = DateTimeField(default=datetime.datetime.now)
+    reported_items = ListField(StringField(required=True), required=True)

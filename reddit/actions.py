@@ -1,6 +1,4 @@
-import json
-import pprint
-
+import datetime
 from database.models import Reported_Users
 
 from reddit.config import subreddit
@@ -16,50 +14,41 @@ def get_reported_data(sub):
 
 
 def create_and_store_new_user(reported_item):
+    reported_items_list = [reported_item.id]
     new_user_object = {
+        "redditor_id": str(reported_item.author.id),
         "name": reported_item.author.name,
+        "modified": datetime.datetime.now(),
+        "reported_items": reported_items_list
     }
     Reported_Users(**new_user_object).save()
 
 
 def add_reported_item(user, item):
-    user_update_object = {
-        "name": item.author.name,
-        "reported_items": [item]
-    }
-    user.update(**user_update_object)
+    prev_reported = user.reported_items
+    # If element is not found in user reported_items list
+    if not any(prev_item == item.id for prev_item in prev_reported):
+        print("Item not in list", item.id)
+        prev_reported.append(item.id)
+        user_update_object = {
+            "modified": datetime.datetime.now(),
+            "reported_items": prev_reported
+        }
+        user.update(**user_update_object)
+    else:
+        indexOf = prev_reported.index(item.id)
+        print("Item in list", item.id, indexOf)
 
 
 def check_for_repeat_offenders(reports_list):
     for item in reports_list:
         name = item.author.name
         try:
-            found = Reported_Users.objects.get(name=name)
-            print("Found this user", name)
-            # add_reported_item(found, item)
             # IF user is found, update user with new item
+            found = Reported_Users.objects.get(name=name)
+            add_reported_item(found, item)
         except Reported_Users.DoesNotExist:
             create_and_store_new_user(item)
-
-        # Get users in db
-        # create_and_store_new_user(item)
-
-        # If the author of this item does not exist in reported_users
-        # if !(reported_users.reduce((usr) => usr.id === item.author.id));
-        # if not any(usr.name == item.author.name for usr in db_users):
-        #     # Instantiate new user
-        #     new_reported_user = Reported_User(item.author)
-        #     new_reported_user.add_reported_item(item)
-        #     # And add them to this list of reported users
-        #     Reported_Users(new_reported_user).save()
-        # else:
-        #     # pysthcript - like spanglish
-        #     # found = [for (users in list) if (usr.id == author.id) return usr]
-        #     found_user = [
-        #         usr for usr in reported_users if usr.id == item.author.id
-        #     ][0]
-        #     # TODO PUT method on individual user
-        #     found_user.add_reported_item(item)
 
 
 def collect_recent_reports():
@@ -69,16 +58,6 @@ def collect_recent_reports():
         print("Checking for repeat users")
         check_for_repeat_offenders(recent_reports)
     else:
-        print("No reports. Closing.")
+        print("No new reports. Closing.")
         # Slack bot no reports
         return
-
-
-# def collect_recently_reported_users():
-#     # Pop into the subreddit, grab actively reported posts, and store them in JSON
-#     # TODO This becomes the response from the database
-
-#     reported_users = []
-#     curr_reports = get_reported_data(subreddit)
-#     check_users_and_add_reports(curr_reports, reported_users)
-#     return reported_users
