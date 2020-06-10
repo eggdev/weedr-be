@@ -3,7 +3,7 @@ from database.models import User
 from flask_restful import Resource
 
 
-class UsersApi(Resource):
+class ManyUsersApi(Resource):
     def get(self):
         users = User.objects().to_json()
         return Response(users, mimetype="application/json", status=200)
@@ -14,7 +14,7 @@ class UsersApi(Resource):
         return Response(new_user, mimetype="application/json", status=200)
 
 
-class UserApi(Resource):
+class SingleUserApi(Resource):
     def get_one(self, name):
         found = User.objects.get(name=name).to_json()
         return Response(found, mimetype="application/json", status=200)
