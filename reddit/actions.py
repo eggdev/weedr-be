@@ -1,4 +1,6 @@
+from flask import jsonify
 import datetime
+import pprint
 from database.models import Reported_Users
 
 from reddit.config import subreddit
@@ -37,7 +39,7 @@ def add_reported_item(user, item):
         user.update(**user_update_object)
     else:
         indexOf = prev_reported.index(item.id)
-        print("Item in list", item.id, indexOf)
+        print("Item found in users list", item.id, indexOf)
 
 
 def check_for_repeat_offenders(reports_list):

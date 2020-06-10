@@ -14,3 +14,5 @@ def initialize_background():
 
 
 atexit.register(lambda: scheduler.shutdown())
+
+# def initialize_background(): return collect_recent_reports()
