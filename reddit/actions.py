@@ -16,12 +16,13 @@ def get_reported_data(sub):
 
 
 def create_and_store_new_user(reported_item):
+    print("New user. Creating object")
     reported_items_list = [reported_item.id]
     new_user_object = {
         "redditor_id": str(reported_item.author.id),
         "name": reported_item.author.name,
         "modified": datetime.datetime.now(),
-        "reported_items": reported_items_list
+        "reported_items": reported_items_list,
     }
     Reported_Users(**new_user_object).save()
 
@@ -30,16 +31,15 @@ def add_reported_item(user, item):
     prev_reported = user.reported_items
     # If element is not found in user reported_items list
     if not any(prev_item == item.id for prev_item in prev_reported):
-        print("Item not in list", item.id)
-        prev_reported.append(item.id)
+        print("Newly reported for user. Assigning")
         user_update_object = {
             "modified": datetime.datetime.now(),
-            "reported_items": prev_reported
+            "reported_items": prev_reported.append(item.id)
         }
         user.update(**user_update_object)
     else:
         indexOf = prev_reported.index(item.id)
-        print("Item found in users list", item.id, indexOf)
+        print("Reported Item already assigned to user")
 
 
 def check_for_repeat_offenders(reports_list):

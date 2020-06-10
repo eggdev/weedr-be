@@ -1,6 +1,7 @@
 from flask import Response, request
 from database.models import Reported_Users
 from flask_restful import Resource
+from reddit.config import reddit
 
 
 class ManyUsersApi(Resource):
@@ -15,17 +16,17 @@ class ManyUsersApi(Resource):
 
 
 class SingleUserApi(Resource):
-    def get_one(self, name):
+    def get(self, name):
         found = Reported_Users.objects.get(name=name).to_json()
         return Response(found, mimetype="application/json", status=200)
 
-    def update_one(self, name):
+    def put(self, name):
         body = request.get_json()
         updated = Reported_Users.objects.get(
             name=name).update(**body).to_json()
         return Response(updated, mimetype="application/json", status=200)
 
-    def delete_one(self, name):
+    def delete(self, name):
         deleted = Reported_Users.objects().get(name=name)
         deleted.delete()
         return Response(deleted, mimetype="application/json", status=200)
