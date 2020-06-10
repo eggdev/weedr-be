@@ -9,6 +9,7 @@ verify_ssl = true
 flask = "*"
 mongoengine = "*"
 flask-restful = "*"
+dnspython = "*"
 
 [requires]
 python_version = "2.7"
