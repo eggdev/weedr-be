@@ -12,6 +12,7 @@ flask-restful = "*"
 dnspython = "*"
 flask-bcrypt = "*"
 flask-jwt-extended = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "2.7"

@@ -13,11 +13,11 @@ class CreateModerator(Resource):
             "username": username,
             "subreddits": []
         }
+        # Will check for all subreddits a user moderates and add them to the object
         moderated_subreddits = reddit.get(
             f"/user/{username}/moderated_subreddits")
         if "data" in moderated_subreddits:
             for sub in moderated_subreddits["data"]:
-                # this method will grab all subreddit data
                 new_moderator["subreddits"].append(sub["sr"])
 
         return new_moderator
@@ -34,9 +34,8 @@ class CreateModerator(Resource):
                 # Create new moderator object without a password
                 new_mod_dict = self.generate_mod_object(username)
                 new_mod = Moderator(**new_mod_dict)
-                new_mod["password"] = body["password"]
+                new_mod["password"] = body["password"].hash_password()
                 # Generate new user object with password
-                new_mod.hash_password()
                 new_mod.save()
                 return {"success": {"username": username}}, 200
             else:
@@ -51,16 +50,18 @@ class LoginModerator(Resource):
         authorized = moderator.check_password(body.get('password'))
         if not authorized:
             return {'error': 'Email or password invalid'}, 401
-        expires = datetime.timedelta(days=30)
+
         access_token = create_access_token(
-            identity=str(moderator.username), expires_delta=expires)
-        return {"token": access_token}
+            identity=str(moderator.username))
+
+        return {"login": True}, 200
 
 
 class GetModerator(Resource):
     @jwt_required
     def get(self, username):
         moderator = Moderator.objects.get(username=username)
+        # Change this to be oAuth at some point
         # Create new praw reddit instance
         # Generate a json for the FE of Moderator
         # JSON will contain each subreddit the user moderates and some basic json from that object
