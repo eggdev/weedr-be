@@ -1,7 +1,5 @@
-from api.Redditor.users import ManyUsersApi, SingleUserApi
-
-from api.Subreddit.resources import GetAllReportedItems
+from api.Moderator.resources import CreateModerator
 
 
 def initialize_routes(api):
-    api.add_resource(GetAllReportedItems, '/r/<subreddit>')
+    api.add_resource(CreateModerator, '/v1/auth')

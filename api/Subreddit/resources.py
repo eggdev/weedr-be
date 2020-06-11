@@ -3,6 +3,9 @@ from flask import Response, request, jsonify
 from flask_restful import Resource
 # from database.models import Reported_Item
 
+# When subreddit is generated, pull in info from it to define the schema around what mods exist
+# Should be able to get that information and apply it to the collection
+
 
 class GetAllReportedItems(Resource):
     def get(self, subreddit):

@@ -10,4 +10,4 @@ SUBREDDIT = os.getenv("SUBREDDIT")
 DB_NAME = os.getenv("DB_NAME")
 
 
-DB_URI = f"mongodb+srv://{DB_USERNAME}:{DB_PASSWORD}@{DB_NAME}.mongodb.net/{SUBREDDIT}?retryWrites=true&w=majority"
+DB_URI = f"mongodb+srv://{DB_USERNAME}:{DB_PASSWORD}@{DB_NAME}.mongodb.net/dev"
