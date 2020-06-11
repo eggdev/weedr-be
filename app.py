@@ -9,12 +9,15 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 app.config["MONGODB_HOST"] = DB_URI
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+app.config["JWT_ACCESS_COOKIE_PATH"] = '/v1/api/'
+app.config["JWT_REFRESH_COOKIE_PATH"] = '/v1/login'
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
 
+jwt = JWTManager(app)
 
 api = Api(app)
 bcrypt = Bcrypt(app)
-jwt = JWTManager(app)
 CORS(app, resources={r"/v1/*": {"origins": "*"}})
 
 initialize_app(app)
