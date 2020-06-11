@@ -20,7 +20,6 @@ class SingleUserApi(Resource):
     def get(self, name):
         found = Reported_Users.objects.get(name=name)
         formatted = format_user_object(found)
-
         return Response(formatted, mimetype="application/json", status=200)
 
     def put(self, name):

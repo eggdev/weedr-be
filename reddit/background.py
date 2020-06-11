@@ -9,7 +9,7 @@ scheduler = BackgroundScheduler()
 def initialize_background():
   # Gonna need to figure out background run cadence
     scheduler.add_job(func=collect_recent_reports,
-                      trigger="interval", seconds=10)
+                      trigger="interval", seconds=120)
     scheduler.start()
 
 

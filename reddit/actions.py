@@ -29,8 +29,6 @@ def create_and_store_new_user(reported_item, item_type):
 def add_reported_item(user, item, item_type):
     prev_reported = user.reported_items
     # If element is not found in user reported_items list
-
-    print(prev_reported)
     if not any(prev_item["item_id"] == item.id for prev_item in prev_reported):
         newly_reported_item = {"item_id": item.id, "item_type": item_type}
         readied = Reported_Item(**newly_reported_item)
@@ -49,8 +47,8 @@ def check_for_repeat_offenders(reports_list):
     for item in reports_list:
         name = item.author.name
         # This attribute is localized to comments as they are children of submissions
-        reported_item_type = "comments" if hasattr(
-            item, "submission") else "submissions"
+        reported_item_type = "comment" if hasattr(
+            item, "submission") else "submission"
         found = len(Reported_Users.objects(name=name)) > 0
         if found:
             # If user is found, update user with new item
