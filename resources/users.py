@@ -1,7 +1,8 @@
-from flask import Response, request
+from flask import Response, request, jsonify
 from database.models import Reported_Users
 from flask_restful import Resource
 from reddit.config import reddit
+from resources.formatting import format_user_object
 
 
 class ManyUsersApi(Resource):
@@ -17,8 +18,10 @@ class ManyUsersApi(Resource):
 
 class SingleUserApi(Resource):
     def get(self, name):
-        found = Reported_Users.objects.get(name=name).to_json()
-        return Response(found, mimetype="application/json", status=200)
+        found = Reported_Users.objects.get(name=name)
+        formatted = format_user_object(found)
+
+        return Response(formatted, mimetype="application/json", status=200)
 
     def put(self, name):
         body = request.get_json()
