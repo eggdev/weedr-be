@@ -49,7 +49,7 @@ class LoginModerator(Resource):
         moderator = Moderator.objects.get(username=username)
         authorized = moderator.check_password(body.get('password'))
         if not authorized:
-            return {'error': 'Email or password invalid'}, 401
+            return {'error': 'Email or password invalid', "login": False}, 401
 
         access_token = create_access_token(
             identity=str(moderator.username))
