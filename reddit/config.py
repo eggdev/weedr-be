@@ -20,13 +20,3 @@ reddit = praw.Reddit(
     password=REDDIT_PASSWORD)
 
 subreddit = reddit.subreddit(SUBREDDIT)
-
-dict_fields = ("author",
-               "id",
-               "name",
-               "score",
-               "ups",
-               "num_comments",
-               "downs",
-               "mod_reports",
-               "user_reports")
