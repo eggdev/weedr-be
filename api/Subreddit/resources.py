@@ -1,21 +1,12 @@
-#  Capture all reported items for this subreddit
-from flask import Response, request, jsonify
+#  Store subreddits that users have logged in from.
+from flask import request, jsonify, make_response
 from flask_restful import Resource
-# from database.models import Reported_Item
-
-# When subreddit is generated, pull in info from it to define the schema around what mods exist
-# Should be able to get that information and apply it to the collection
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
-class GetAllReportedItems(Resource):
-    def get(self, subreddit):
-        print(subreddit)
-        items = ["value"]
-        # This will need to be all subreddit data we want to pass to FE
-        return Response(items, mimetype="application/json", status=200)
-
-    def post(self, subreddit):
-        body = request.get_json()
-        # new_user = Reported_Users(**body).save()
-        # Probably only used on sub creation? Maybe on new reported_user?
-        return Response(body, mimetype="application/json", status=200)
+class GetSubreddit(Resource):
+    @jwt_required
+    def get(self, sr):
+        curr_user = get_jwt_identity()
+        resp = make_response({"subreddit": sr}, 200)
+        return resp
