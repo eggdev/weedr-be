@@ -2,7 +2,13 @@
 import datetime
 from flask import request, jsonify, make_response
 from flask_restful import Resource
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+from flask_jwt_extended import (create_access_token,
+                                create_refresh_token,
+                                jwt_required,
+                                set_access_cookies,
+                                set_refresh_cookies,
+                                unset_jwt_cookies,
+                                get_jwt_identity)
 from database.Moderator.models import Moderator
 from reddit.config import reddit
 
@@ -57,7 +63,6 @@ class LoginModerator(Resource):
         refresh_token = create_refresh_token(
             identity=str(moderator.username)
         )
-        #  If it is your just passing the tokens back. Not doing anything with them here
         resp = make_response({"login": True}, 200)
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
@@ -73,12 +78,11 @@ class LogoutModerator(Resource):
 
 class GetModerator(Resource):
     @jwt_required
-    def get(self, username):
-        print(username)
-        moderator = Moderator.objects.get(username=username)
+    def get(self):
+        curr = get_jwt_identity()
+        mod_user = Moderator.objects.get(username=curr)
+        return_obj = mod_user.generate_return_object()
+        resp = make_response({"user": return_obj}, 200)
         # Change this to be oAuth at some point
         # Create new praw reddit instance
-        # Generate a json for the FE of Moderator
-        # JSON will contain each subreddit the user moderates and some basic json from those
-
-        return {"username": moderator.username}
+        return resp

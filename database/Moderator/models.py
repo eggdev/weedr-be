@@ -14,3 +14,9 @@ class Moderator(Document):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def generate_return_object(self):
+        return {
+            "username": self.username,
+            "subreddits": self.subreddits,
+        }
