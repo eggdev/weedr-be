@@ -36,37 +36,45 @@ class CreateModerator(Resource):
         except Moderator.DoesNotExist:
             is_mod = reddit.redditor(name=username).is_mod
             if is_mod:
-                # Create new moderator object without a password
                 new_mod_dict = self.generate_mod_object(username)
                 new_mod = Moderator(**new_mod_dict)
                 new_mod["password"] = body["password"].hash_password()
                 # Generate new user object with password
                 new_mod.save()
-                return {"success": {"username": username}}, 200
+                return_obj = new_mod.generate_return_object()
+                resp = make_response(return_obj)
+                return resp, 200
             else:
-                return {"error": "User is not a moderator"}, 501
+                resp = make_response({"error": "User is not a moderator"})
+                return resp, 501
 
 
 class LoginModerator(Resource):
     def post(self):
         body = request.get_json()
         username = body.get('username').lower()
-        moderator = Moderator.objects.get(username=username)
-        authorized = moderator.check_password(body.get('password'))
-        # Checking if users password is correct
-        if not authorized:
-            return {'error': 'Email or password invalid', "login": False}, 401
+        try:
+            moderator = Moderator.objects.get(username=username)
+            # Checking if users password is correct
+            authorized = moderator.check_password(body.get('password'))
+            if not authorized:
+                return {'error': 'Email or password invalid', "login": False}, 401
+            access_token = create_access_token(
+                identity=str(moderator.username)
+            )
+            refresh_token = create_refresh_token(
+                identity=str(moderator.username)
+            )
 
-        access_token = create_access_token(
-            identity=str(moderator.username)
-        )
-        refresh_token = create_refresh_token(
-            identity=str(moderator.username)
-        )
-        resp = make_response({"login": True}, 200)
-        set_access_cookies(resp, access_token)
-        set_refresh_cookies(resp, refresh_token)
-        return resp
+            return_obj = moderator.generate_return_object()
+            resp = make_response(return_obj, 200)
+            set_access_cookies(resp, access_token)
+            set_refresh_cookies(resp, refresh_token)
+            return resp
+        except Moderator.DoesNotExist:
+            resp = make_response(
+                {"error": "User was not found.", "msg": "Would you like to create a new one?"})
+            return resp, 401
 
 
 class LogoutModerator(Resource):
@@ -83,6 +91,5 @@ class GetModerator(Resource):
         mod_user = Moderator.objects.get(username=curr)
         return_obj = mod_user.generate_return_object()
         resp = make_response({"user": return_obj}, 200)
-        # Change this to be oAuth at some point
         # Create new praw reddit instance
         return resp
