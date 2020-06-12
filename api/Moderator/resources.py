@@ -10,43 +10,34 @@ from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies,
                                 get_jwt_identity)
 from database.Moderator.models import Moderator
+from database.Subreddit.models import Subreddit
 from reddit.config import reddit
 
 
 class CreateModerator(Resource):
-    def generate_mod_object(self, username):
-        new_moderator = {
-            "username": username,
-            "subreddits": []
-        }
-        # Will check for all subreddits a user moderates and add them to the object
-        moderated_subreddits = reddit.get(
-            f"/user/{username}/moderated_subreddits")
-        if "data" in moderated_subreddits:
-            for sub in moderated_subreddits["data"]:
-                new_moderator["subreddits"].append(sub["sr"])
-        return new_moderator
-
     def post(self):
         body = request.get_json()
         username = body["username"].lower()
         try:
             Moderator.objects.get(username=username)
-            return {"found": "User already exists"}, 201
+            resp = make_response({"found": "User already exists"}, 201)
+            return resp
         except Moderator.DoesNotExist:
             is_mod = reddit.redditor(name=username).is_mod
             if is_mod:
-                new_mod_dict = self.generate_mod_object(username)
-                new_mod = Moderator(**new_mod_dict)
-                new_mod["password"] = body["password"].hash_password()
+                new_mod = Moderator(username=username)
+                new_mod.generate_moderated_subreddits(reddit)
+                new_mod.password = body["password"]
+                new_mod.hash_password()
                 # Generate new user object with password
                 new_mod.save()
                 return_obj = new_mod.generate_return_object()
-                resp = make_response(return_obj)
-                return resp, 200
+                resp = make_response(return_obj, 200)
+                return resp
             else:
-                resp = make_response({"error": "User is not a moderator"})
-                return resp, 501
+                # Some day, looking for moderator dashboard? Job listing sort of thing?
+                resp = make_response({"error": "User is not a moderator"}, 501)
+                return resp
 
 
 class LoginModerator(Resource):
@@ -73,8 +64,8 @@ class LoginModerator(Resource):
             return resp
         except Moderator.DoesNotExist:
             resp = make_response(
-                {"error": "User was not found.", "msg": "Would you like to create a new one?"})
-            return resp, 401
+                {"error": "User was not found.", "msg": "Would you like to create a new one?"}, 401)
+            return resp
 
 
 class LogoutModerator(Resource):
