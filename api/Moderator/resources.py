@@ -2,7 +2,7 @@
 import datetime
 from flask import request, jsonify, make_response
 from flask_restful import Resource
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, set_access_cookies, set_refresh_cookies
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 from database.Moderator.models import Moderator
 from reddit.config import reddit
 
@@ -47,6 +47,7 @@ class LoginModerator(Resource):
         username = body.get('username').lower()
         moderator = Moderator.objects.get(username=username)
         authorized = moderator.check_password(body.get('password'))
+        # Checking if users password is correct
         if not authorized:
             return {'error': 'Email or password invalid', "login": False}, 401
 
@@ -56,10 +57,17 @@ class LoginModerator(Resource):
         refresh_token = create_refresh_token(
             identity=str(moderator.username)
         )
-
+        #  If it is your just passing the tokens back. Not doing anything with them here
         resp = make_response({"login": True}, 200)
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
+        return resp
+
+
+class LogoutModerator(Resource):
+    def post(self):
+        resp = make_response({"login": False}, 200)
+        unset_jwt_cookies(resp)
         return resp
 
 
