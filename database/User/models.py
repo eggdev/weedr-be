@@ -5,7 +5,6 @@ import json
 from database.db import db
 from flask_bcrypt import generate_password_hash, check_password_hash
 from mongoengine import Document, StringField, ListField
-from reddit.config import USER_AGENT, CLIENT_ID, CLIENT_SECRET
 
 
 class User(Document):
@@ -21,7 +20,8 @@ class User(Document):
 
     def add_account(self, username, refresh_token):
         self.reddit_accounts.append(
-            {"username": username, "refresh_token": refresh_token})
+            {"username": username, "refresh_token": refresh_token}
+        )
         return self.reddit_accounts
 
     def generate_return_object(self):
