@@ -27,7 +27,16 @@ class Signup(Resource):
             new_user.hash_password()
             # Generate new user object with password
             new_user.save()
-            resp = make_response({"username": new_user.username}, 200)
+            resp_user = new_user.generate_return_object()
+            resp = make_response({"user": resp_user}, 200)
+            access_token = create_access_token(
+                identity=str(new_user.username)
+            )
+            refresh_token = create_refresh_token(
+                identity=str(new_user.username)
+            )
+            set_access_cookies(resp, access_token)
+            set_refresh_cookies(resp, refresh_token)
             return resp
 
 
@@ -40,7 +49,11 @@ class Login(Resource):
             # Checking if users password is correct
             authorized = user.check_password(body.get('password'))
             if not authorized:
-                return {'error': 'Username or password invalid', "login": False}, 401
+                resp = make_response({
+                    "error": "Username or password invalid",
+                    "logged_in": False
+                }, 401)
+                return resp
             access_token = create_access_token(
                 identity=str(user.username)
             )
@@ -48,14 +61,13 @@ class Login(Resource):
             refresh_token = create_refresh_token(
                 identity=str(user.username)
             )
-            return_obj = user.generate_return_object()
-            resp = make_response(return_obj, 200)
+            resp_user = user.generate_return_object()
+            resp = make_response({"user": resp_user}, 201)
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
             return resp
         except User.DoesNotExist:
-            resp = make_response(
-                {"error": "User was not found.", "msg": "Would you like to create a new one?"}, 401)
+            resp = make_response({"logged_in": False}, 403)
             return resp
 
 
