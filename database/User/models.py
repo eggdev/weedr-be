@@ -15,6 +15,11 @@ class User(Document):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def add_account(self, username, refresh_token):
+        self.reddit_accounts.append(
+            {"username": username, "refresh_token": refresh_token})
+        return self.reddit_accounts
+
     def generate_return_object(self):
         return {
             "username": self.username,

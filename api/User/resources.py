@@ -73,7 +73,7 @@ class Login(Resource):
 
 class Logout(Resource):
     def post(self):
-        resp = make_response({"login": False}, 200)
+        resp = make_response({"logged_in": False}, 200)
         unset_jwt_cookies(resp)
         return resp
 
@@ -89,10 +89,13 @@ class UserAccount(Resource):
 
     @jwt_required
     def put(self):
-        # Adding an authorized Reddit account to user
         curr = get_jwt_identity()
-        user = User.objects.get(username=curr)
         body = request.get_json()
-        new_reddit_acc = body.moderator_account
-        print(new_reddit_acc)
-        return
+        code = body["code"]
+        refresh_token = reddit.auth.authorize(code)
+        reddit_un = reddit.user.me().name
+        user = User.objects.get(username=curr)
+        new_accounts = user.add_account(reddit_un, refresh_token)
+        user.update(reddit_accounts=new_accounts)
+        resp = make_response({"user": user}, 200)
+        return resp
