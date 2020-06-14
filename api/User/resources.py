@@ -28,7 +28,7 @@ class Signup(Resource):
             # Generate new user object with password
             new_user.save()
             resp_user = new_user.generate_return_object()
-            resp = make_response({"user": resp_user}, 200)
+            resp = make_response(resp_user, 200)
             access_token = create_access_token(
                 identity=str(new_user.username)
             )
@@ -62,7 +62,7 @@ class Login(Resource):
                 identity=str(user.username)
             )
             resp_user = user.generate_return_object()
-            resp = make_response({"user": resp_user}, 201)
+            resp = make_response(resp_user, 201)
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
             return resp
@@ -84,7 +84,7 @@ class UserAccount(Resource):
         curr = get_jwt_identity()
         user = User.objects.get(username=curr)
         return_obj = user.generate_return_object()
-        resp = make_response({"user": return_obj}, 200)
+        resp = make_response(return_obj, 200)
         return resp
 
     @jwt_required
@@ -97,5 +97,5 @@ class UserAccount(Resource):
         user = User.objects.get(username=curr)
         new_accounts = user.add_account(reddit_un, refresh_token)
         user.update(reddit_accounts=new_accounts)
-        resp = make_response({"user": user}, 200)
+        resp = make_response(user, 200)
         return resp
