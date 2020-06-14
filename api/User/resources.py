@@ -99,3 +99,10 @@ class UserAccount(Resource):
         user.update(reddit_accounts=new_accounts)
         resp = make_response(user, 200)
         return resp
+
+
+class RedditAuth(Resource):
+    @jwt_required
+    def get(self):
+        auth_url = reddit.auth.url(scope_list, 'state_val', 'permanent')
+        return auth_url, 200
