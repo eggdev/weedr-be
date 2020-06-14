@@ -5,6 +5,7 @@ from database.db import initialize_app
 from database.config import DB_URI, JWT_SECRET_KEY
 from flask_jwt_extended import JWTManager
 from api.routes import initialize_routes
+from reddit.background import initialize_background
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -28,8 +29,7 @@ CORS(app, resources={r"/v1/*": {
 
 initialize_app(app)
 initialize_routes(api)
+initialize_background()
 
-
-# initialize_background()
 if __name__ == "__main__":
     app.run()

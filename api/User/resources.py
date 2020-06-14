@@ -10,7 +10,7 @@ from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies,
                                 get_jwt_identity)
 from database.User.models import User
-from reddit.config import reddit
+from reddit.config import reddit, scope_list
 
 
 class Signup(Resource):

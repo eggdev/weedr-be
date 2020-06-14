@@ -1,7 +1,11 @@
 import datetime
+import praw
+import requests
+import json
 from database.db import db
 from flask_bcrypt import generate_password_hash, check_password_hash
 from mongoengine import Document, StringField, ListField
+from reddit.config import USER_AGENT, CLIENT_ID, CLIENT_SECRET
 
 
 class User(Document):

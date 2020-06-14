@@ -1,15 +1,17 @@
 import time
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
-from reddit.actions import collect_recent_reports
+from reddit.actions import main
 
 scheduler = BackgroundScheduler()
 
 
 def initialize_background():
-  # Gonna need to figure out background run cadence
-    scheduler.add_job(func=collect_recent_reports,
-                      trigger="interval", seconds=15)
+    scheduler.add_job(
+        func=main,
+        trigger="interval",
+        seconds=2
+    )
     scheduler.start()
 
 
