@@ -9,78 +9,78 @@ from flask_jwt_extended import (create_access_token,
                                 set_refresh_cookies,
                                 unset_jwt_cookies,
                                 get_jwt_identity)
-from database.Moderator.models import Moderator
-from database.Subreddit.models import Subreddit
+from database.User.models import User
 from reddit.config import reddit
 
 
-class CreateModerator(Resource):
+class Signup(Resource):
     def post(self):
         body = request.get_json()
         username = body["username"].lower()
         try:
-            Moderator.objects.get(username=username)
+            User.objects.get(username=username)
             resp = make_response({"found": "User already exists"}, 201)
             return resp
-        except Moderator.DoesNotExist:
-            is_mod = reddit.redditor(name=username).is_mod
-            if is_mod:
-                new_mod = Moderator(username=username)
-                new_mod.generate_moderated_subreddits(reddit)
-                new_mod.password = body["password"]
-                new_mod.hash_password()
-                # Generate new user object with password
-                new_mod.save()
-                return_obj = new_mod.generate_return_object()
-                resp = make_response(return_obj, 200)
-                return resp
-            else:
-                # Some day, looking for moderator dashboard? Job listing sort of thing?
-                resp = make_response({"error": "User is not a moderator"}, 501)
-                return resp
+        except User.DoesNotExist:
+            new_user = User(username=username)
+            new_user.password = body["password"]
+            new_user.hash_password()
+            # Generate new user object with password
+            new_user.save()
+            resp = make_response({"username": new_user.username}, 200)
+            return resp
 
 
-class LoginModerator(Resource):
+class Login(Resource):
     def post(self):
         body = request.get_json()
         username = body.get('username').lower()
         try:
-            moderator = Moderator.objects.get(username=username)
+            user = User.objects.get(username=username)
             # Checking if users password is correct
-            authorized = moderator.check_password(body.get('password'))
+            authorized = user.check_password(body.get('password'))
             if not authorized:
-                return {'error': 'Email or password invalid', "login": False}, 401
+                return {'error': 'Username or password invalid', "login": False}, 401
             access_token = create_access_token(
-                identity=str(moderator.username)
-            )
-            refresh_token = create_refresh_token(
-                identity=str(moderator.username)
+                identity=str(user.username)
             )
 
-            return_obj = moderator.generate_return_object()
+            refresh_token = create_refresh_token(
+                identity=str(user.username)
+            )
+            return_obj = user.generate_return_object()
             resp = make_response(return_obj, 200)
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
             return resp
-        except Moderator.DoesNotExist:
+        except User.DoesNotExist:
             resp = make_response(
                 {"error": "User was not found.", "msg": "Would you like to create a new one?"}, 401)
             return resp
 
 
-class LogoutModerator(Resource):
+class Logout(Resource):
     def post(self):
         resp = make_response({"login": False}, 200)
         unset_jwt_cookies(resp)
         return resp
 
 
-class GetModerator(Resource):
+class UserAccount(Resource):
     @jwt_required
     def get(self):
         curr = get_jwt_identity()
-        mod_user = Moderator.objects.get(username=curr)
-        return_obj = mod_user.generate_return_object()
+        user = User.objects.get(username=curr)
+        return_obj = user.generate_return_object()
         resp = make_response({"user": return_obj}, 200)
-        # Create new praw reddit instance
         return resp
+
+    @jwt_required
+    def put(self):
+        # Adding an authorized Reddit account to user
+        curr = get_jwt_identity()
+        user = User.objects.get(username=curr)
+        body = request.get_json()
+        new_reddit_acc = body.moderator_account
+        print(new_reddit_acc)
+        return

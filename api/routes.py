@@ -1,10 +1,8 @@
-from api.Moderator.resources import CreateModerator, LoginModerator, LogoutModerator, GetModerator
-from api.Subreddit.resources import GetSubreddit
+from api.User.resources import Signup, Login, Logout, UserAccount
 
 
 def initialize_routes(api):
-    api.add_resource(CreateModerator, '/v1/signup')
-    api.add_resource(LoginModerator, '/v1/login')
-    api.add_resource(LogoutModerator, '/v1/logout')
-    api.add_resource(GetModerator, '/v1/api/self')
-    api.add_resource(GetSubreddit, '/v1/api/r/<sr>')
+    api.add_resource(Signup, '/v1/signup')
+    api.add_resource(Login, '/v1/login')
+    api.add_resource(Logout, '/v1/logout')
+    api.add_resource(UserAccount, '/v1/api/self')
