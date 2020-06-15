@@ -5,11 +5,9 @@ from pprint import pprint
 
 class Subreddit(Document):
     sr = StringField(required=True)
-    reported_submissions = ListField(required=False)
-    reported_comments = ListField(required=False)
+    reported_items = ListField(required=False)
 
-    def add_reported_item(self, items, item_type):
+    def add_reported_items(self, items):
         for item in items:
-            item_list = self.reported_comments if item_type == 'comment' else self.reported_submissions
-            if not item.id in item_list:
-                item_list.append(item.id)
+            if not item.id in self.reported_items:
+                self.reported_items.append(item.id)
