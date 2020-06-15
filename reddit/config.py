@@ -17,5 +17,15 @@ reddit = praw.Reddit(
     redirect_uri=REDIRECT_URI,
     user_agent=USER_AGENT)
 
+
+def generate_praw_instance(refresh_token):
+    return praw.Reddit(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        refresh_token=refresh_token,
+        user_agent=USER_AGENT
+    )
+
+
 scope_list = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki",
               "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"]

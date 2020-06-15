@@ -84,6 +84,7 @@ class UserAccount(Resource):
         curr = get_jwt_identity()
         user = User.objects.get(username=curr)
         return_obj = user.generate_return_object()
+        reddit_obj = user.update_refresh_token()
         resp = make_response(return_obj, 200)
         return resp
 
