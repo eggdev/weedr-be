@@ -7,35 +7,31 @@ from database.Redditor.models import Redditor
 from reddit.config import generate_praw_instance
 
 
-def get_reported_data(sub):
+def get_reported_data(sub, reddit):
     # Shove active reports into list
+    sr = sub.display_name
+    comments = sub.mod.reports("comment")
+    submissions = sub.mod.reports("submission")
+    subreddit = None
     try:
-        print(sub)
+        subreddit = Subreddit.objects.get(sr=sr)
     except Subreddit.DoesNotExist:
-        print(sub)
-    return []
-    # reported_list = []
-    # for comm in sub.mod.reports("comments"):
-    #     reported_list.append(
-    #         {"id": comm.id, "item_type": "comment"}
-    #     )
+        subreddit = Subreddit(sr=sr)
+        subreddit.save()
 
-    # for subm in sub.mod.reports("submissions"):
-    #     reported_list.append(
-    #         {"id": subm.id, "item_type": "submission"}
-    #     )
-
-    # return reported_list
+    subreddit.add_reported_item(comments, "comment")
+    subreddit.add_reported_item(submissions, "submission")
+    subreddit.save()
+    check_for_repeat_offenders(comments, reddit, "comment")
+    check_for_repeat_offenders(submissions, reddit, "submission")
 
 
-def check_for_repeat_offenders(reports_list, reddit):
+def check_for_repeat_offenders(reports_list, reddit, item_type):
     for item in reports_list:
-        item_type = item["item_type"]
-        item_id = item["id"]
         post = reddit.comment(
-            id=item_id
+            id=item.id
         ) if item_type == "comment" else reddit.submission(
-            id=item_id
+            id=item.id
         )
         username = post.author.name
         # This attribute is localized to comments as they are children of submissions
@@ -47,12 +43,6 @@ def check_for_repeat_offenders(reports_list, reddit):
             redditor.add_reported_item(post, item_type)
 
 
-def collect_recent_reports(reddit, subreddit):
-    recent_reports = get_reported_data(subreddit)
-    if (len(recent_reports) > 0):
-        check_for_repeat_offenders(recent_reports, reddit)
-
-
 def main():
     # Go through all users
     for user in User.objects():
@@ -60,4 +50,4 @@ def main():
         reddit = generate_praw_instance(acc["refresh_token"])
         moderated = reddit.redditor(acc["username"]).moderated()
         for subreddit in moderated:
-            collect_recent_reports(reddit, subreddit)
+            get_reported_data(subreddit, reddit)
