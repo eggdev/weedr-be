@@ -11,3 +11,6 @@ class Subreddit(Document):
         for item in items:
             if not item.id in self.reported_items:
                 self.reported_items.append(item.id)
+
+    def make_return_object(self, subreddit):
+        return {"subreddit": self.sr}

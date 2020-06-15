@@ -6,7 +6,7 @@ from pprint import pprint
 from database.db import db
 from flask_bcrypt import generate_password_hash, check_password_hash
 from mongoengine import Document, StringField, ListField
-from reddit.config import generate_praw_instance
+from reddit.config import generate_refresh_praw_instance
 
 
 class User(Document):
@@ -32,9 +32,9 @@ class User(Document):
         )
         return self.reddit_accounts
 
-    def update_refresh_token(self):
+    def generate_praw_instance(self):
         token = self.single_user_info()["token"]
-        return generate_praw_instance(token)
+        return generate_refresh_praw_instance(token)
 
     def generate_moderated_subs(self, subs_list):
         clean = []
@@ -45,10 +45,9 @@ class User(Document):
     def generate_return_object(self):
         token = self.single_user_info()["token"]
         un = self.single_user_info()["un"]
-        reddit = generate_praw_instance(token)
+        reddit = self.generate_praw_instance()
         moderated = reddit.redditor(un).moderated()
         self.refresh_token = token
-        self.generate_moderated_subs(moderated)
         self.save()
         return {
             "username": self.username,

@@ -18,7 +18,7 @@ reddit = praw.Reddit(
     user_agent=USER_AGENT)
 
 
-def generate_praw_instance(refresh_token):
+def generate_refresh_praw_instance(refresh_token):
     return praw.Reddit(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,

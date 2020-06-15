@@ -4,7 +4,7 @@ import datetime
 from database.User.models import User
 from database.Subreddit.models import Subreddit
 from database.Redditor.models import Redditor
-from reddit.config import generate_praw_instance
+from reddit.config import generate_refresh_praw_instance
 from pprint import pprint
 
 
@@ -39,8 +39,8 @@ def get_reported_data(sub, reddit):
 def main():
     # Go through all users
     for user in User.objects():
+        reddit = user.generate_praw_instance()
         acc = user.reddit_accounts[0]
-        reddit = generate_praw_instance(acc["refresh_token"])
         moderated = reddit.redditor(acc["username"]).moderated()
         for subreddit in moderated:
             get_reported_data(subreddit, reddit)
