@@ -10,7 +10,7 @@ def initialize_background():
     scheduler.add_job(
         func=main,
         trigger="interval",
-        seconds=5
+        minutes=5
     )
     scheduler.start()
 

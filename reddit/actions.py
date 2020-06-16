@@ -40,7 +40,5 @@ def main():
     # Go through all users
     for user in User.objects():
         reddit = user.generate_praw_instance()
-        acc = user.reddit_accounts[0]
-        moderated = reddit.redditor(acc["username"]).moderated()
-        for subreddit in moderated:
+        for subreddit in user.moderating:
             get_reported_data(subreddit, reddit)
