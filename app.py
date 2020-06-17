@@ -29,7 +29,7 @@ CORS(app, resources={r"/v1/*": {
 
 initialize_app(app)
 initialize_routes(api)
-initialize_background()
+# initialize_background()
 
 if __name__ == "__main__":
     app.run(debug=True, port=80, host="0.0.0.0")
