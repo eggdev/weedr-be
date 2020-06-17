@@ -23,9 +23,10 @@ jwt = JWTManager(app)
 
 api = Api(app)
 bcrypt = Bcrypt(app)
-CORS(app, resources={r"/v1/*": {
-    "origins": "laughing-borg-71cb1a.netlify.app"
-}})
+CORS(app, resources={
+    r"/v1/*": {
+        "origins": "*"
+    }})
 
 initialize_app(app)
 initialize_routes(api)
